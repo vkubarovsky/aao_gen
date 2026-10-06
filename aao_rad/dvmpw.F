@@ -59,10 +59,25 @@ c
       S_TT =  0.001/(2*pi)*SIGMA_TT    (COST,W,Q2,E)
       S_LTP = 0.001/(2*pi)*2*SIGMA_LTP (COST,W,Q2,E)
 
+c
+c     AO convention.  S_LT and S_LTP above already carry the factor 2 that
+c     the two OFF-DIAGONAL structure functions have in the AO/MAID basis
+c     (cf. xsection.F: vlt = sqrt(eps*(1+eps)/2), "divided by 2 ... to
+c     match AO formalism").  The matching kinematic coefficient is therefore
+c     sqrt(eps*(1+-eps)/2) and NOT the canonical sqrt(2*eps*(1+-eps)):
+c     using the canonical one here applies a canonical prefactor to an
+c     AO-basis quantity and doubles the cos(phi) interference term.
+c     Measured on the RG-A aao_norad production (2026-09-22): cos(phi)
+c     harmonic 0.222 vs the canonical 0.097 at Q2 = 1.0-1.6 GeV2, while
+c     cos(2phi) agrees (-0.472 vs -0.467); sigma_TT is diagonal and is
+c     not doubled.  EXCLURAD never hit this because it ignores sigma0 and
+c     builds its own Born from the structure functions with the AO
+c     coefficient (exclurad.F:407).  The radiative branch of aao_rad is
+c     likewise already correct (aao_rad.F:977).
       sigma0 = S_T   + EPS*S_L +         
      *   EPS                  *S_TT  * COS(2*PHI_G)   + 
-     * SQRT(2.*EPS*(1.+EPS))*S_LT  * COS(PHI_G)     +
-     * HELI*SQRT(2.*EPS*(1.-EPS))*S_LTP * SIN(PHI_G)     
+     * SQRT(EPS*(1.+EPS)/2.)*S_LT  * COS(PHI_G)     +
+     * HELI*SQRT(EPS*(1.-EPS)/2.)*S_LTP * SIN(PHI_G)     
        IF(sigma0 .LT. 0.0) sigma0=0.0     
 c
 c       S_TOT =FLUXW(xb,Q2,E)/(2.*PI)*(
