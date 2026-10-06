@@ -17,6 +17,7 @@ __pycache__
 *.log
 tex/*.out
 tools/aao_rc_point
+tools/check_lt_convention
 tools/*.txt
 tools/*.inp
 tools/*.log

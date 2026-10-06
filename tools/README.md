@@ -27,8 +27,38 @@ make_rc_point.py after any physics change in aao_rad.F!) with:
 - Hadron angles are fixed at the VERTEX; EXCLURAD fixes the OBSERVED
   proton t/phi. Within the vcut window the difference is small but
   nonzero for hard photons.
-- 2026-07 finding obtained with this tool: the factorized Mo-Tsai tail
-  gives a phi-dependence of RC ~10x flatter than the exact
-  Bardin-Shumeiko integral (EXCLURAD), and sits ~10% below it at the
-  plateau of the 5.75 GeV pi0 test point. Use EXCLURAD for RC numbers;
+- The factorized Mo-Tsai tail gives a FLATTER phi-dependence of RC than
+  the exact Bardin-Shumeiko integral (EXCLURAD), and sits below it.  How
+  much is energy dependent, so quote the point: at the 5.75 GeV CLAS6 pi0
+  test point (2026-07) the phi-dependence came out ~10x flatter; at
+  Q2 = 1.5, xB = 0.30, -t = 0.30, v < 0.2, E0 = 10.6 GeV (2026-10) it is
+  only 1.6x flatter -- swing 0.061 against 0.097 -- while the offset is
+  10%.  That offset is formalism, not physics: pi0.vpk2021, pi0.amp2609
+  and pi0.vpk2026 agree with each other to 0.5%.  About a third of it is
+  vacuum polarization, which EXCLURAD carries (delta_vac = +3.6%,
+  phi independent) and aao_rad does not have at all; the rest is the
+  peaking approximation. Use EXCLURAD for RC numbers;
   use aao_rad for event samples (acceptance, MM2 shapes).
+
+
+# tools/check_lt_convention — are the two Born treatments consistent?
+
+`dvmpw` returns both a cross section `sigma0` and the structure functions.
+`aao_norad` samples events from `sigma0`; the radiative branch of `aao_rad`
+(`aao_rad.F:977`) instead rebuilds the Born from the structure functions in
+the AO convention.  The two must agree, and this program checks that they
+do at a fixed kinematic point.
+
+```
+gfortran -fno-automatic -ffixed-line-length-none \
+  tools/check_lt_convention.F aao_rad/dvmpw.F aao_rad/dvmpx.F \
+  -o tools/check_lt_convention
+tools/check_lt_convention                      # defaults: 10.6 1.5 0.30 0.30
+tools/check_lt_convention 5.75 1.125 0.1372 0.12   # E0 Q2 xB |t|
+```
+
+Prints `ratio = born_AO/sigma0` over phi and exits non-zero if it strays
+from 1 by more than 1e-4.  Before `c83ce8e` it ran 0.801 / 1.000 / 1.987 at
+phi = 0 / 90 / 180 -- exactly 1 at 90 and 270, where `cos(phi) = 0` removes
+the LT term, which is the signature of a convention mismatch in `sigma_LT`
+rather than anything radiative.
