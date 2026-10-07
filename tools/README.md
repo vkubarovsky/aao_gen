@@ -27,18 +27,27 @@ make_rc_point.py after any physics change in aao_rad.F!) with:
 - Hadron angles are fixed at the VERTEX; EXCLURAD fixes the OBSERVED
   proton t/phi. Within the vcut window the difference is small but
   nonzero for hard photons.
-- The factorized Mo-Tsai tail gives a FLATTER phi-dependence of RC than
-  the exact Bardin-Shumeiko integral (EXCLURAD), and sits below it.  How
-  much is energy dependent, so quote the point: at the 5.75 GeV CLAS6 pi0
-  test point (2026-07) the phi-dependence came out ~10x flatter; at
-  Q2 = 1.5, xB = 0.30, -t = 0.30, v < 0.2, E0 = 10.6 GeV (2026-10) it is
-  only 1.6x flatter -- swing 0.061 against 0.097 -- while the offset is
-  10%.  That offset is formalism, not physics: pi0.vpk2021, pi0.amp2609
-  and pi0.vpk2026 agree with each other to 0.5%.  About a third of it is
-  vacuum polarization, which EXCLURAD carries (delta_vac = +3.6%,
-  phi independent) and aao_rad does not have at all; the rest is the
-  peaking approximation. Use EXCLURAD for RC numbers;
-  use aao_rad for event samples (acceptance, MM2 shapes).
+- aao_rad's Mo-Tsai RC gives a FLATTER phi-dependence than the exact
+  Bardin-Shumeiko integral (EXCLURAD), and sits below it.  How much is
+  energy dependent, so quote the point: at the 5.75 GeV CLAS6 pi0 test
+  point (2026-07) the phi-dependence came out ~10x flatter; at Q2 = 1.5,
+  xB = 0.30, -t = 0.30, v < 0.2, E0 = 10.6 GeV (2026-10) it is only 1.6x
+  flatter -- swing 0.061 against 0.097 -- while the offset is 10%.
+- That offset is not the structure functions: pi0.vpk2021, pi0.amp2609 and
+  pi0.vpk2026 agree with each other to 0.5%.  One piece of it is identified
+  and is a genuine omission -- aao_rad implements no vacuum polarization at
+  all (no vacuum/vpol/delvac anywhere in aao_rad/*.F), while EXCLURAD
+  carries delta_vac = +3.6%, phi independent.  The remaining ~6% is NOT
+  decomposed.  It is not the peaking approximation: aao_rad integrates the
+  photon solid angle exactly, by importance sampling in 5 regions
+  (aao_rad.F:215 ff) -- two narrow windows on the incident and scattered
+  electron directions, two shells, and a fifth region covering the full
+  cos(theta_k) and phi_k with the peak windows subtracted, each carrying its
+  compensating mcfac/mpfac weight.  Open candidates: the soft/hard split and
+  what is exponentiated, the vertex-versus-observed hadron angles (above),
+  and the MAID/DVMP seam at W = 1.8 inside the radiative integrand.
+- Until that is settled, use EXCLURAD for RC numbers; use aao_rad for event
+  samples (acceptance, MM2 shapes).
 
 
 # tools/check_lt_convention — are the two Born treatments consistent?
